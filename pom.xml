@@ -6,6 +6,16 @@
  	<name>DocumentConverter</name>
 	<description>A Java application that convert various documents.</description>  
 
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<main.class>io.github.awidesky.documentConverter.Main</main.class>
+	</properties>
+	
 	<dependencies>
   		<dependency>
   			<groupId>org.jodconverter</groupId>
@@ -18,4 +28,108 @@
 			<version>1.2.1</version>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>17</source>
+					<target>17</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>io.github.awidesky.documentConverter.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${project.build.directory}/app-image</outputDirectory>
+					<archive>
+						<manifest>
+							<mainClass>io.github.awidesky.documentConverter.Main</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>DocumentConverter</finalName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>copy-resource-one</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/app-image</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}</directory>
+									<includes>
+										<include>icon.png</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.panteleyev</groupId>
+				<artifactId>jpackage-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<input>${project.build.directory}/app-image</input>
+					<destination>${project.build.directory}/build</destination>
+					<addModules>java.base,java.desktop,java.logging,jdk.crypto.ec</addModules>
+					<mainJar>DocumentConverter.jar</mainJar>
+					<mainClass>io.github.awidesky.documentConverter.Main</mainClass>
+					<name>DocumentConverter</name>
+					<vendor>Eugene Hong</vendor>
+					<appVersion>${project.version}</appVersion>
+					<licenseFile>${basedir}/LICENSE</licenseFile>
+					<copyright>Copyright (c) 2024 Eugene Hong. All Rights Reserved.</copyright>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jpackage-with-no-resource</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jpackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
