@@ -66,7 +66,7 @@ public class ConvertExecutor {
 						e = e1;
 					}
 					return e;
-				}).filter(Objects::nonNull).toList().get(0);
+				}).filter(Objects::nonNull).toList().stream().findFirst().orElse(null);
 				if(ex != null) {
 					if(ex instanceof InterruptedException ie) throw ie;
 					else if(ex instanceof ExecutionException ee) throw ee;

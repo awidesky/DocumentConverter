@@ -1,8 +1,11 @@
 package io.github.awidesky.documentConverter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
@@ -16,20 +19,36 @@ import io.github.awidesky.documentConverter.IOPair.IO;
 
 class ConvertTest {
 
-	File f = new File("C:\\Users\\FVT01미래자동차01\\Downloads\\sample.pptx");
-	File o = new File("C:\\Users\\FVT01미래자동차01\\Downloads\\sample.pdf");
-	ConvertUtil dc = new ConvertUtil();
+	File f;
+	File o;
+	ConvertUtil dc;
 
 	@BeforeEach
 	void setup() throws OfficeException {
+		f = TestResourcePath.getResource("pptx/sample.pptx");
+		Arrays.stream(f.getParentFile().listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		o = new File(f.getParentFile(), f.getName() + ".pdf");
+		dc = new ConvertUtil();
 		dc.start();
 	}
 	
 	@Test
-	void test() throws OfficeException, IOException {
+	void convertTest() throws OfficeException, IOException {
 		dc.convert(new IO(f, o));
 		dc.close();
 		Desktop.getDesktop().open(o);
+	}
+	
+	@Test
+	void duplicateTest() throws OfficeException, IOException {
+		File o1 = new File("C:\\Users\\FVT01미래자동차01\\Downloads\\", f.getName() + "_1_.pdf");
+		File o2 = new File("C:\\Users\\FVT01미래자동차01\\Downloads\\", f.getName() + "_2_.pdf");
+
+		dc.convert(new IO(f, o1));
+		dc.convert(new IO(f, o2));
+		dc.close();
+		
+		assertEquals(Utils.getHash(o1), Utils.getHash(o2));
 	}
 	
 	@Test

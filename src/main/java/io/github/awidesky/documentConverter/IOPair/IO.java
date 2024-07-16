@@ -2,9 +2,10 @@ package io.github.awidesky.documentConverter.IOPair;
 
 import java.io.File;
 
+// TODO : make IO interface, and subclass IO_File, IO_FileStream
 public class IO {
-	private final File in;
-	private final File out;
+	private File in;
+	private File out;
 	
 	public IO(File in) {
 		this(in, ".pdf");
@@ -29,6 +30,14 @@ public class IO {
 
 	public File getOut() {
 		return out;
+	}
+
+	public void setIn(File in) {
+		this.in = in;
+	}
+
+	public void setOut(File out) {
+		this.out = out;
 	}
 	
 }
