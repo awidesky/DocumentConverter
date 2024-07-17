@@ -25,8 +25,8 @@ class ConvertConcurrentTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		Arrays.stream(TestResourcePath.getResource("pptx").listFiles()).filter(f -> !f.getName().endsWith(".pptx")).forEach(File::delete);
-		in = Arrays.stream(TestResourcePath.getResource("pptx").listFiles()).filter(f -> f.getName().endsWith(".pptx")).limit(MAXPPTINPUTFILES).toList();
+		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles()).toList();
 		dc = new ConvertUtil();
 		dc.start();
 	}
@@ -34,7 +34,7 @@ class ConvertConcurrentTest {
 	@AfterEach
 	void close() throws OfficeException {
 		dc.close();
-		Arrays.stream(TestResourcePath.getResource("pptx").listFiles()).filter(f -> !f.getName().endsWith(".pptx")).forEach(File::delete);
+		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
 	}
 	
 	@Test
