@@ -15,10 +15,10 @@ public class ConvertUtil {
 	private final org.jodconverter.core.DocumentConverter converter;
 
 	public ConvertUtil() {
-		this("C:\\Users\\FVT01미래자동차01\\Downloads\\LibreOfficePortable\\App\\libreoffice");
+		this("C:\\Users\\FVT01미래자동차01\\Downloads\\LibreOfficePortable\\App\\libreoffice"); //TODO : proper path and configure
 	}
 	public ConvertUtil(String officeHome) {
-		officeManager = LocalOfficeManager.builder().officeHome(officeHome).build();
+		officeManager = LocalOfficeManager.builder().templateProfileDir("C:\\Users\\FVT01미래자동차01\\Downloads\\LibreOfficePortable\\Data\\settings").officeHome(officeHome).build();
 		converter = LocalConverter.builder().officeManager(officeManager).build();
 	}
 	
