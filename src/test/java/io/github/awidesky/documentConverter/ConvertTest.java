@@ -42,13 +42,13 @@ class ConvertTest {
 	
 	@Test
 	void duplicateTest() throws OfficeException, IOException {
-		File o1 = new File("C:\\Users\\FVT01미래자동차01\\Downloads\\", f.getName() + "_1_.pdf");
-		File o2 = new File("C:\\Users\\FVT01미래자동차01\\Downloads\\", f.getName() + "_2_.pdf");
-
-		dc.convert(new IO(f, o1));
-		dc.convert(new IO(f, o2));
+		IO io1 = new IO(f, "_1_.pdf");
+		IO io2 = new IO(f, "_2_.pdf");
 		
-		assertTrue(Utils.comparePDF(o1, o2));
+		dc.convert(io1);
+		dc.convert(io2);
+		
+		assertTrue(Utils.comparePDF(io1.getOut(), io2.getOut()));
 	}
 	
 }
