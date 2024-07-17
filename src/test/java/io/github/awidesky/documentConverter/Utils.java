@@ -1,31 +1,28 @@
 package io.github.awidesky.documentConverter;
 
-import java.io.BufferedInputStream;
+import java.awt.Desktop;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
+
+import de.redsix.pdfcompare.CompareResultImpl;
+import de.redsix.pdfcompare.PdfComparator;
+import de.redsix.pdfcompare.RenderingException;
 
 public class Utils {
-
-	public static String getHash(File f) {
-		byte[] buffer= new byte[8192];
-	    int count;
+	public static boolean comparePDF(File f1, File f2) {
 		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
-			while ((count = bis.read(buffer)) > 0) {
-				digest.update(buffer, 0, count);
+			CompareResultImpl diff = new PdfComparator<CompareResultImpl>(f1, f2).compare();
+			boolean ret = diff.isEqual();
+			if(!ret) {
+				File d = new File(f1.getParent(), f1.getName() + " _ " + f2.getName() +".pdf");
+				diff.writeTo(d.getAbsolutePath());
+				Desktop.getDesktop().open(d);
 			}
-			bis.close();
-			return HexFormat.of().formatHex(digest.digest());
-		} catch (NoSuchAlgorithmException | IOException e) {
+			return ret;
+		} catch (RenderingException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
+			return false;
 		}
-
 	}
 }

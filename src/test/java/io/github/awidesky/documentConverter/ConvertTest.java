@@ -1,6 +1,6 @@
 package io.github.awidesky.documentConverter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -11,6 +11,7 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -32,11 +33,16 @@ class ConvertTest {
 		dc.start();
 	}
 	
+	@AfterEach
+	void close() throws OfficeException {
+		dc.close();
+		Arrays.stream(TestResourcePath.getResource("pptx").listFiles()).filter(f -> !f.getName().endsWith(".pptx")).forEach(File::delete);
+	}
+	
 	@Test
 	void convertTest() throws OfficeException, IOException {
 		dc.convert(new IO(f, o));
-		dc.close();
-		Desktop.getDesktop().open(o);
+		//Desktop.getDesktop().open(o);
 	}
 	
 	@Test
@@ -46,9 +52,8 @@ class ConvertTest {
 
 		dc.convert(new IO(f, o1));
 		dc.convert(new IO(f, o2));
-		dc.close();
 		
-		assertEquals(Utils.getHash(o1), Utils.getHash(o2));
+		assertTrue(Utils.comparePDF(o1, o2));
 	}
 	
 	@Test

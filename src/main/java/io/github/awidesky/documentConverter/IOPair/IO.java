@@ -1,6 +1,7 @@
 package io.github.awidesky.documentConverter.IOPair;
 
 import java.io.File;
+import java.util.Objects;
 
 // TODO : make IO interface, and subclass IO_File, IO_FileStream
 public class IO {
@@ -16,7 +17,7 @@ public class IO {
 	}
 
 	public IO(File in, File outdir, String outName) {
-		this(in, new File(outdir, outName));
+		this(in, new File(Objects.requireNonNullElse(outdir, in.getParentFile()), outName));
 	}
 
 	public IO(File in, File out) {
