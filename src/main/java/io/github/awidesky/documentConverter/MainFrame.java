@@ -112,10 +112,10 @@ public class MainFrame extends JFrame {
 		SwingUtilities.invokeLater(this::showProgress);
 		
 		Instant startTime = Instant.now();
-		ConvertUtil cu = new ConvertUtil();
+		ConvertUtil cu = new ConvertUtil(Runtime.getRuntime().availableProcessors());
 		try {
 			cu.start();
-			Arrays.stream(ins).map(toIO).forEach(io -> {
+			Arrays.stream(ins).parallel().map(toIO).forEach(io -> {
 				SwingUtilities.invokeLater(() -> updateUI(io.getIn(), io.getOut()));
 				try {
 					cu.convert(io);
@@ -123,7 +123,6 @@ public class MainFrame extends JFrame {
 					setFailedFlag();
 					e.printStackTrace();
 					SwingDialogs.error("Failed to convert " + io.getIn().getName(), "%e%", e, false);
-				} finally {
 				}
 			});
 			cu.close();

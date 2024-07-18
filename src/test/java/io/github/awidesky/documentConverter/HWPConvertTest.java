@@ -25,22 +25,20 @@ class HWPConvertTest {
 	@BeforeEach
 	void setup() throws OfficeException, IOException {
 		f = TestResourcePath.getResource("samples/sample.hwp");
-		Arrays.stream(f.getParentFile().listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
 		o = new File(f.getParentFile(), f.getName() + ".pdf");
-		dc = new ConvertUtil();
+		dc = new ConvertUtil(2);
 		dc.start();
 	}
 	
 	@AfterEach
 	void close() throws OfficeException {
 		dc.close();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).parallel().forEach(File::delete);
 	}
 	
 	@Test
 	void convertTest() throws OfficeException, IOException {
 		dc.convert(new IO(f, o));
-		//Desktop.getDesktop().open(o);
 	}
 	
 	@Test

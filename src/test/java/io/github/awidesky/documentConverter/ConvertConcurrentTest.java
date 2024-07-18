@@ -1,14 +1,15 @@
 package io.github.awidesky.documentConverter;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.jodconverter.core.office.OfficeException;
 import org.junit.jupiter.api.AfterEach;
@@ -25,30 +26,45 @@ class ConvertConcurrentTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
 		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles()).toList();
-		dc = new ConvertUtil();
+		dc = new ConvertUtil(Runtime.getRuntime().availableProcessors());
 		dc.start();
 	}
 	
 	@AfterEach
 	void close() throws OfficeException {
 		dc.close();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).parallel().forEach(File::delete);
 	}
 	
 	@Test
 	void bulkTest() throws OfficeException, InterruptedException, ExecutionException {
 		List<IO> ios = in.stream().map(IO::new).toList();
-		dc.convert(ios);
+		Instant startTime = Instant.now();
+		ios.stream().forEach(io -> {
+			try {
+				dc.convert(io);
+			} catch (OfficeException e) {
+				e.printStackTrace();
+				fail("failed to convert!");
+			}
+		});
+		System.out.println("Sequential convert : " + Duration.between(startTime, Instant.now()).toMillis() + "ms");
+		
 		List<File> first = ios.stream().map(IO::getOut).toList();
 		
 		ios.forEach(io -> io.setOut(new File(io.getOut().getParent(), "(1)" + io.getOut().getName())));
 		
-		ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		ConvertExecutor ce = dc.convertExecutor(pool);
-		ce.submitConvertsAll(ios).get();
-		pool.shutdown();
+		startTime = Instant.now();
+		ios.parallelStream().forEach(io -> {
+			try {
+				dc.convert(io);
+			} catch (OfficeException e) {
+				e.printStackTrace();
+				fail("failed to convert!");
+			}
+		});
+		System.out.println("Parallel   convert : " + Duration.between(startTime, Instant.now()).toMillis() + "ms");
 		
 		Iterator<File> f1 = first.iterator();
 		Iterator<File> f2 = ios.stream().map(IO::getOut).toList().iterator();
