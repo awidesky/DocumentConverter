@@ -7,12 +7,11 @@ import io.github.awidesky.documentConverter.IOPair.IO;
 
 public class IOFactory {
 	
-	public static Function<File, IO> toExtension(File outDir, String extension) {
-		return f -> new IO(f, outDir, f.getName().substring(0, f.getName().lastIndexOf(".")) + extension);
-	}
-	
-	public static Function<File, IO> saveOriginalExtension(File outDir, String extension) {
-		return f -> new IO(f, outDir, f.getName() + extension);
+	public static Function<File, IO> toExtension(File outDir, boolean saveOriginalExtension, String extension) {
+		return f ->  {
+			String newName = saveOriginalExtension ? f.getName() : f.getName().substring(0, f.getName().lastIndexOf("."));
+			return new IO(f, outDir, newName + extension);
+		};
 	}
 	
 	public static Function<File, IO> regexReplace(File outDir, String regex, String replacement, String extension) {
