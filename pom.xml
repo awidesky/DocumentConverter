@@ -138,7 +138,7 @@
 				<configuration>
 					<input>${project.build.directory}/app-image</input>
 					<destination>${project.build.directory}/build</destination>
-					<addModules>java.base,java.desktop,java.logging,jdk.crypto.ec</addModules>
+					<addModules>java.base,java.desktop</addModules>
 					<mainJar>DocumentConverter.jar</mainJar>
 					<mainClass>io.github.awidesky.documentConverter.Main</mainClass>
 					<name>DocumentConverter</name>
