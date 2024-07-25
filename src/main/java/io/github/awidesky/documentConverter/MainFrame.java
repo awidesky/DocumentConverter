@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jodconverter.core.office.OfficeException;
 
@@ -55,14 +56,17 @@ public class MainFrame extends JFrame {
 		setSize(500, 500);
 		setLayout(new BorderLayout(5, 5));
 		JPanel f = new JPanel();
+		
 		f.add(format);
 		f.add(Box.createHorizontalStrut(10));
+		cb_format.setEnabled(false);
 		f.add(cb_format);
 		f.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
 		add(f, BorderLayout.CENTER);
 		
 		JPanel k = new JPanel();
 		k.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+		ck_keep.setEnabled(false);
 		k.add(ck_keep);
 		add(k, BorderLayout.SOUTH);
 		pack();
@@ -87,6 +91,21 @@ public class MainFrame extends JFrame {
 		jfc.setMultiSelectionEnabled(true);
 		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		jfc.setDialogTitle("Choose document files");
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("All documents", 
+				"docx", "doc", "hwp", "hwpx", "odt", "ott", "sxw", "wpd", "txt", "rtf", "html", "xlsx", "xls", 
+				"csv", "tsv", "ods", "ots", "sxc" , "pptx", "ppt", "odp", "otp", "sxi", "docx", "doc", "xlsx", 
+				"xls", "pptx", "ppt", "odt", "ott", "sxw", "ods", "ots", "sxc", "odp", "otp", "sxi", "hwp", "hwpx"));
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("Text documents", 
+				"docx", "doc", "hwp", "hwpx", "odt", "ott", "sxw", "wpd", "txt", "rtf", "html"));
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("Spreadsheets",
+				"xlsx", "xls", "csv", "tsv", "ods", "ots", "sxc"));
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("Presentations", 
+				"pptx", "ppt", "odp", "otp", "sxi"));
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("Microsoft office",
+				"docx", "doc", "xlsx", "xls", "pptx", "ppt"));
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("OpenDocument", 
+				"odt", "ott", "sxw", "ods", "ots", "sxc", "odp", "otp", "sxi"));
+		jfc.addChoosableFileFilter(new FileNameExtensionFilter("아래한글 문서", "hwp", "hwpx"));
 		
 		if(jfc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
 		
@@ -96,14 +115,11 @@ public class MainFrame extends JFrame {
 		jfc.setMultiSelectionEnabled(false);
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setDialogTitle("Choose directory to save pdfs!");
+		jfc.resetChoosableFileFilters();
 		
 		if(jfc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
 		
 		targets = ins.length;
-		
-		
-		cb_format.setEnabled(false);
-		ck_keep.setEnabled(false);
 		
 		File saveDir = jfc.getSelectedFile();
 		toIO = IOFactory.toExtension(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
