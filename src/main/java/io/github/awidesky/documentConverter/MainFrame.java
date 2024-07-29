@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
 	private static final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
 	private final JLabel format = new JLabel("Format : ");
-	private final JComboBox<String> cb_format = new JComboBox<>(new String[] {".pdf", ".odt", ".docx", "pptx", ".ods", ".xlsx", "odp", ".txt", ".rtf"});
+	private final JComboBox<String> cb_format = new JComboBox<>(new String[] {".pdf", ".odt", ".docx", ".pptx", ".ods", ".xlsx", ".odp", ".txt", ".rtf"});
 	private final JCheckBox ck_keep = new JCheckBox("keep original extension in filename");
 	private final JFileChooser jfc = new JFileChooser() {
 		private static final long serialVersionUID = 1838574539723650634L;
@@ -59,14 +59,13 @@ public class MainFrame extends JFrame {
 		
 		f.add(format);
 		f.add(Box.createHorizontalStrut(10));
-		cb_format.setEnabled(false);
+		cb_format.setEditable(true);
 		f.add(cb_format);
 		f.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
 		add(f, BorderLayout.CENTER);
 		
 		JPanel k = new JPanel();
 		k.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-		ck_keep.setEnabled(false);
 		k.add(ck_keep);
 		add(k, BorderLayout.SOUTH);
 		pack();
@@ -118,7 +117,9 @@ public class MainFrame extends JFrame {
 		jfc.resetChoosableFileFilters();
 		
 		if(jfc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
-		
+
+		cb_format.setEnabled(false);
+		ck_keep.setEnabled(false);
 		targets = ins.length;
 		
 		File saveDir = jfc.getSelectedFile();
