@@ -9,7 +9,9 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.BorderFactory;
@@ -106,11 +108,13 @@ public class MainFrame extends JFrame {
 				"odt", "ott", "sxw", "ods", "ots", "sxc", "odp", "otp", "sxi"));
 		jfc.addChoosableFileFilter(new FileNameExtensionFilter("아래한글 문서", "hwp", "hwpx"));
 		
-		if(jfc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
+		List<File> ins = new ArrayList<>();
+		while(jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			ins.addAll(Arrays.asList(jfc.getSelectedFiles()));
+		}
 		
-		File[] ins = jfc.getSelectedFiles();
 		
-		jfc.setCurrentDirectory(ins[0].getParentFile());
+		jfc.setCurrentDirectory(ins.get(0).getParentFile());
 		jfc.setMultiSelectionEnabled(false);
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setDialogTitle("Choose directory to save pdfs!");
@@ -120,7 +124,7 @@ public class MainFrame extends JFrame {
 
 		cb_format.setEnabled(false);
 		ck_keep.setEnabled(false);
-		targets = ins.length;
+		targets = ins.size();
 		
 		File saveDir = jfc.getSelectedFile();
 		toIO = IOFactory.toExtension(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
@@ -132,7 +136,7 @@ public class MainFrame extends JFrame {
 		ConvertUtil cu = new ConvertUtil(Runtime.getRuntime().availableProcessors());
 		try {
 			cu.start();
-			Arrays.stream(ins).parallel().map(toIO).forEach(io -> {
+			ins.stream().parallel().map(toIO).forEach(io -> {
 				SwingUtilities.invokeLater(() -> updateUI(io.getIn(), io.getOut()));
 				try {
 					cu.convert(io);
