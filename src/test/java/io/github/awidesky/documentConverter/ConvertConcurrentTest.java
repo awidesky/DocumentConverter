@@ -6,15 +6,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.jodconverter.core.office.OfficeException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import io.github.awidesky.documentConverter.IOPair.IO;
@@ -22,26 +21,29 @@ import io.github.awidesky.documentConverter.IOPair.IO;
 class ConvertConcurrentTest {
 	public static final long MAXPPTINPUTFILES = 10;
 	
-	ConvertUtil dc;
-	List<File> in;
+	static ConvertUtil dc;
+	static List<File> in;
 
-	@BeforeEach
-	void setUp() throws Exception {
-		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles()).toList();
+	@BeforeAll
+	static void setUp() throws Exception {
+		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles())
+				.filter(f -> !f.getName().equals("DOCX_TestPage.docx"))
+				.filter(f -> !f.getName().equals("Extlst-test.pptx"))
+				.toList();
 		dc = new ConvertUtil(Runtime.getRuntime().availableProcessors());
 		dc.start();
 	}
 	
-	@AfterEach
-	void close() throws OfficeException {
+	@AfterAll
+	static void close() throws OfficeException {
 		dc.close();
 		//System.out.println(); System.out.println(); System.out.println();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).parallel().forEach(File::delete);
+		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).parallel()
+			.filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
 	}
 	
 	@Test
 	void bulkTest() throws OfficeException, InterruptedException, ExecutionException {
-		in = new ArrayList<File>(in.stream().filter(f -> !f.getName().equals("DOCX_TestPage.docx")).filter(f -> !f.getName().equals("Extlst-test.pptx")).toList());
 		List<IO> ios = in.stream().map(IO::new).toList();
 		ios.forEach(io -> io.setOut(new File(io.getOut().getParent(), "Sequential_" + io.getOut().getName())));
 		dc.convert(ios.get(0)); //Test conversion to warm up
