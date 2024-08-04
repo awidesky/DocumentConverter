@@ -8,7 +8,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -36,19 +35,19 @@ class ConvertConcurrentTest {
 	@AfterEach
 	void close() throws OfficeException {
 		dc.close();
-		System.out.println(); System.out.println(); System.out.println();
+		//System.out.println(); System.out.println(); System.out.println();
 		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).parallel().forEach(File::delete);
 	}
 	
 	@Test
 	void bulkTest() throws OfficeException, InterruptedException, ExecutionException {
 		in = new ArrayList<File>(in.stream().filter(f -> !f.getName().equals("DOCX_TestPage.docx")).filter(f -> !f.getName().equals("Extlst-test.pptx")).toList());
-		Collections.shuffle(in);
 		List<IO> ios = in.stream().map(IO::new).toList();
 		ios.forEach(io -> io.setOut(new File(io.getOut().getParent(), "Sequential_" + io.getOut().getName())));
+		dc.convert(ios.get(0)); //Test conversion to warm up
 		Instant startTime = Instant.now();
 		ios.stream().forEach(io -> {
-			System.out.println("\t" + io.toString());
+			//System.out.println("\t" + io.toString());
 			try {
 				dc.convert(io);
 			} catch (OfficeException e) {
@@ -64,7 +63,7 @@ class ConvertConcurrentTest {
 		
 		startTime = Instant.now();
 		ios.parallelStream().forEach(io -> {
-			System.out.println("\t" + io.toString());
+			//System.out.println("\t" + io.toString());
 			try {
 				dc.convert(io);
 			} catch (OfficeException e) {

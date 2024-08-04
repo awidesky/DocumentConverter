@@ -30,7 +30,7 @@ class ConvertTest {
 	@AfterEach
 	void close() throws OfficeException {
 		dc.close();
-		System.out.println(); System.out.println(); System.out.println();
+		//System.out.println(); System.out.println(); System.out.println();
 		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).parallel().forEach(File::delete);
 	}
 	

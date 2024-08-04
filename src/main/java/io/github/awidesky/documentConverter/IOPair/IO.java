@@ -43,6 +43,10 @@ public class IO {
 	
 	@Override
 	public String toString() {
+		return "IO from : " + in.getName() + " to : " + out.getName();
+	}
+	
+	public String toStringWithAbsolutePath() {
 		return "IO from : " + in.getAbsolutePath() + " to : " + out.getAbsolutePath();
 	}
 	
