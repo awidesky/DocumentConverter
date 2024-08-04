@@ -41,4 +41,9 @@ public class IO {
 		this.out = out;
 	}
 	
+	@Override
+	public String toString() {
+		return "IO from : " + in.getAbsolutePath() + " to : " + out.getAbsolutePath();
+	}
+	
 }

@@ -30,6 +30,7 @@ class ConvertTest {
 	@AfterEach
 	void close() throws OfficeException {
 		dc.close();
+		System.out.println(); System.out.println(); System.out.println();
 		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).filter(f -> f.getName().endsWith(".pdf")).parallel().forEach(File::delete);
 	}
 	
@@ -43,7 +44,9 @@ class ConvertTest {
 		IO io1 = new IO(f, "_1_.pdf");
 		IO io2 = new IO(f, "_2_.pdf");
 		
+		System.out.println("\t" + io1.toString());
 		dc.convert(io1);
+		System.out.println("\t" + io2.toString());
 		dc.convert(io2);
 		
 		assertTrue(Utils.comparePDF(io1.getOut(), io2.getOut()));

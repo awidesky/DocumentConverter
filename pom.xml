@@ -19,7 +19,7 @@
 	<dependencies>
   		<dependency>
   			<groupId>org.jodconverter</groupId>
-			<artifactId>jodconverter-local</artifactId>
+			<artifactId>jodconverter-local-lo</artifactId>
 			<version>4.4.7</version>
 		</dependency>
 		<dependency>
@@ -27,7 +27,12 @@
 			<artifactId>GUIUtil</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>io.github.awidesky</groupId>
+			<artifactId>ProjectPath</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/de.redsix/pdfcompare -->
 		<dependency>
     		<groupId>de.redsix</groupId>

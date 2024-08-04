@@ -14,9 +14,17 @@ public class Utils {
 			CompareResultImpl diff = new PdfComparator<CompareResultImpl>(f1, f2).compare();
 			boolean ret = diff.isEqual();
 			if(!ret) {
-				File d = new File(f1.getParent(), f1.getName() + " _ " + f2.getName() +".pdf");
+				Desktop.getDesktop().open(f1);
+				Desktop.getDesktop().open(f2);
+				File d = new File(f1.getParent(), "diff_of-" + f1.getName() + "_" + f2.getName() +".pdf");
 				diff.writeTo(d.getAbsolutePath());
-				Desktop.getDesktop().open(d);
+				if(d.exists()) {
+					Desktop.getDesktop().open(d);
+				} else {
+					System.out.println("Somehow diff file " + d.getAbsolutePath() + " does not exist!");
+					System.out.println("Diff JSON : ");
+					System.out.println(diff.getDifferencesJson().replace("\n", "\n\t"));
+				}
 			}
 			return ret;
 		} catch (RenderingException | IOException e) {
