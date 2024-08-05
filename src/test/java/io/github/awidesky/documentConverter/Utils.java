@@ -2,6 +2,7 @@ package io.github.awidesky.documentConverter;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import de.redsix.pdfcompare.CompareResultImpl;
@@ -17,7 +18,7 @@ public class Utils {
 				Desktop.getDesktop().open(f1);
 				Desktop.getDesktop().open(f2);
 				File d = new File(f1.getParent(), "diff_of-" + f1.getName() + "_" + f2.getName() +".pdf");
-				diff.writeTo(d.getAbsolutePath());
+				diff.writeTo(new FileOutputStream(d));
 				if(d.exists()) {
 					Desktop.getDesktop().open(d);
 				} else {
