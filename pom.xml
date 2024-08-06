@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>awidesky.github.io</groupId>
  	<artifactId>DocumentConverter</artifactId>
- 	<version>0.0.1-SNAPSHOT</version>
+ 	<version>1.0.0</version>
  	<name>DocumentConverter</name>
 	<description>A Java application that convert various documents.</description>  
 
@@ -116,7 +116,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<outputDirectory>${project.build.directory}/app-image</outputDirectory>
+					<outputDirectory>${project.build.directory}/build</outputDirectory>
 					<archive>
 						<manifest>
 							<mainClass>io.github.awidesky.documentConverter.Main</mainClass>
@@ -128,56 +128,6 @@
 					<appendAssemblyId>false</appendAssemblyId>
 					<finalName>DocumentConverter</finalName>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.3.1</version>
-				<executions>
-					<execution>
-						<id>copy-resource-one</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/app-image</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}</directory>
-									<includes>
-										<include>icon.png</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.panteleyev</groupId>
-				<artifactId>jpackage-maven-plugin</artifactId>
-				<version>1.4.0</version>
-				<configuration>
-					<input>${project.build.directory}/app-image</input>
-					<destination>${project.build.directory}/build</destination>
-					<addModules>java.base,java.desktop</addModules>
-					<mainJar>DocumentConverter.jar</mainJar>
-					<mainClass>io.github.awidesky.documentConverter.Main</mainClass>
-					<name>DocumentConverter</name>
-					<vendor>Eugene Hong</vendor>
-					<appVersion>${project.version}</appVersion>
-					<licenseFile>${basedir}/LICENSE</licenseFile>
-					<copyright>Copyright (c) 2024 Eugene Hong. All Rights Reserved.</copyright>
-				</configuration>
-				<executions>
-					<execution>
-						<id>jpackage-with-no-resource</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jpackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -5,8 +5,11 @@ import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
+import java.awt.Taskbar;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
@@ -29,7 +33,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jodconverter.core.office.OfficeException;
 
-import io.github.awidesky.documentConverter.IOPair.IO;
 import io.github.awidesky.guiUtil.SwingDialogs;
 
 public class MainFrame extends JFrame {
@@ -54,6 +57,14 @@ public class MainFrame extends JFrame {
 	
 	public MainFrame() {
 		setTitle("DocumentConverter " + Main.VERSION);
+		try {
+			BufferedImage ICON = ImageIO.read(MainFrame.class.getResourceAsStream("/icon/icon.png"));
+			setIconImage(ICON);
+			Taskbar.getTaskbar().setIconImage(ICON);
+		} catch (IOException e) {
+			SwingDialogs.error("Unable to find icon.png", "%e%", e, false);
+			e.printStackTrace();
+		}
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(500, 500);
 		setLayout(new BorderLayout(5, 5));
@@ -112,7 +123,7 @@ public class MainFrame extends JFrame {
 		while(jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			ins.addAll(Arrays.asList(jfc.getSelectedFiles()));
 		}
-		
+		if(ins.isEmpty()) return;
 		
 		jfc.setCurrentDirectory(ins.get(0).getParentFile());
 		jfc.setMultiSelectionEnabled(false);

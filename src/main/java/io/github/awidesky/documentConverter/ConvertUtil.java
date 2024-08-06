@@ -8,7 +8,6 @@ import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
 
-import io.github.awidesky.documentConverter.IOPair.IO;
 import io.github.awidesky.projectPath.UserDataPath;
 
 public class ConvertUtil {

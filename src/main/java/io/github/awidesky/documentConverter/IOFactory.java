@@ -3,8 +3,6 @@ package io.github.awidesky.documentConverter;
 import java.io.File;
 import java.util.function.Function;
 
-import io.github.awidesky.documentConverter.IOPair.IO;
-
 public class IOFactory {
 	
 	public static Function<File, IO> toExtension(File outDir, boolean saveOriginalExtension, String extension) {

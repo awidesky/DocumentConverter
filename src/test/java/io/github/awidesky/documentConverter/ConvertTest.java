@@ -12,8 +12,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import io.github.awidesky.documentConverter.IOPair.IO;
-
 class ConvertTest {
 
 	static List<File> in;

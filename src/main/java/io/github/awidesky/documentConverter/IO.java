@@ -1,4 +1,4 @@
-package io.github.awidesky.documentConverter.IOPair;
+package io.github.awidesky.documentConverter;
 
 import java.io.File;
 import java.util.Objects;
