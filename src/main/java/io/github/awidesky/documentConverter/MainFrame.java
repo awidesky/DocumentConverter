@@ -159,7 +159,7 @@ public class MainFrame extends JFrame {
 		} catch(NumberFormatException e) {
 			System.err.println(e.getMessage());
 		}
-		ConvertUtil cu = new ConvertUtil(processNum);
+		ConvertUtil cu = new ConvertUtil(Math.min(processNum, ins.size()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
 				cu.close();
