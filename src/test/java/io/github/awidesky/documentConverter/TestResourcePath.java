@@ -9,7 +9,10 @@ public class TestResourcePath {
 	public static File getResource(String name) {
 		File ret = null;
 		try {
-			ret = new File(URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource(".").getFile(), "UTF-8"), name);
+			ret = new File(
+					URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource(".").getFile(), "UTF-8") +
+					File.separator +
+					name);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

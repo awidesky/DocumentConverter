@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 /***
  * https://github.com/ebandal/H2Orestart
  */
-class HWPConvertTest {
+class HancomConvertTest {
 
 	static List<File> in;
 	static List<IO> ios;
@@ -23,11 +23,10 @@ class HWPConvertTest {
 
 	@BeforeAll
 	static void setup() throws OfficeException, IOException {
-		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles())
-				.filter(f -> f.getName().endsWith(".hwp") || f.getName().endsWith(".hwpx"))
-				.toList();
+		Utils.clearPDFFiles();
+		in = Arrays.stream(TestResourcePath.getResource("samples/hancom").listFiles()).toList();
 		ios = in.stream().map(IO::new).toList();
-		dc = new ConvertUtil(2);
+		dc = new ConvertUtil(1);
 		dc.start();
 	}
 	
@@ -35,8 +34,7 @@ class HWPConvertTest {
 	static void close() throws OfficeException {
 		dc.close();
 		//System.out.println(); System.out.println(); System.out.println();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).parallel()
-			.filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		Utils.clearPDFFiles();
 	}
 	
 	@Test

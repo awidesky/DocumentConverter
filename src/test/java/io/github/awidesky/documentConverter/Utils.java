@@ -4,6 +4,8 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import de.redsix.pdfcompare.CompareResultImpl;
 import de.redsix.pdfcompare.PdfComparator;
@@ -33,5 +35,13 @@ public class Utils {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public static void clearPDFFiles() {
+		Arrays.stream(TestResourcePath.getResource("samples").listFiles())
+			.parallel()
+			.flatMap(f -> f.isDirectory() ? Arrays.stream(f.listFiles()) : Stream.of(f))
+			.filter(f -> f.getName().endsWith(".pdf"))
+			.forEach(File::delete);
 	}
 }

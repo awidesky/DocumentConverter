@@ -13,7 +13,7 @@ public class IO {
 	}
 	
 	public IO(File in, String newExtension) {
-		this(in, in.getParentFile(), in.getName().substring(0, in.getName().lastIndexOf(".")) + newExtension);
+		this(in, in.getParentFile(), changeExtension(in, newExtension));
 	}
 
 	public IO(File in, File outdir, String outName) {
@@ -23,6 +23,18 @@ public class IO {
 	public IO(File in, File out) {
 		this.in = in;
 		this.out = out;
+	}
+	
+	private static String changeExtension(File file, String newExtension) {
+		try {
+			return file.getName().substring(0, file.getName().lastIndexOf(".")) + newExtension;	
+		} catch(StringIndexOutOfBoundsException e) {
+			String ret = file.getName() + newExtension;
+			System.err.println("Illegal file - no extension : " + file.getAbsolutePath());
+			System.err.println("Using \"" + ret + "\" instead...");
+			e.printStackTrace();
+			return ret;
+		}
 	}
 
 	public File getIn() {

@@ -3,7 +3,6 @@ package io.github.awidesky.documentConverter;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.jodconverter.core.office.OfficeException;
 import org.junit.jupiter.api.AfterAll;
@@ -18,6 +17,7 @@ class StrangeFileTest {
 
 	@BeforeAll
 	static void setup() throws OfficeException {
+		Utils.clearPDFFiles();
 		dc = new ConvertUtil(1);
 		dc.start();
 	}
@@ -25,8 +25,7 @@ class StrangeFileTest {
 	@AfterAll
 	static void close() throws OfficeException {
 		dc.close();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).parallel()
-			.filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		Utils.clearPDFFiles();
 	}
 
 	/*
@@ -37,7 +36,7 @@ class StrangeFileTest {
 	 */
 	@Test
 	void API_Misuse() throws OfficeException {
-		File sample = TestResourcePath.getResource("samples");
+		File sample = TestResourcePath.getResource("samples/ms_office");
 		IO io = new IO(new File(sample, "DOCX_TestPage.docx"), ".pdf");
 		System.out.println("\t" + io.toString());
 		dc.convert(io);
@@ -45,7 +44,7 @@ class StrangeFileTest {
 	
 	@Test
 	void diff() throws OfficeException {
-		File sample = TestResourcePath.getResource("samples");
+		File sample = TestResourcePath.getResource("samples/ms_office");
 		File in = new File(sample, "Extlst-test.pptx");
 		IO io1 = new IO(in, "_1_.pdf");
 		IO io2 = new IO(in, "_2_.pdf");

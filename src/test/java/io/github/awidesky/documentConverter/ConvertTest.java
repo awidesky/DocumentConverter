@@ -20,12 +20,13 @@ class ConvertTest {
 
 	@BeforeAll
 	static void setup() throws OfficeException {
-		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles())
+		Utils.clearPDFFiles();
+		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
 				.filter(f -> !f.getName().equals("DOCX_TestPage.docx"))
 				.filter(f -> !f.getName().equals("Extlst-test.pptx"))
 				.toList();
 		ios = in.stream().map(IO::new).toList();
-		dc = new ConvertUtil(2);
+		dc = new ConvertUtil(1);
 		dc.start();
 	}
 	
@@ -33,8 +34,7 @@ class ConvertTest {
 	static void close() throws OfficeException {
 		dc.close();
 		//System.out.println(); System.out.println(); System.out.println();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).parallel()
-			.filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		Utils.clearPDFFiles();
 	}
 	
 	@Test

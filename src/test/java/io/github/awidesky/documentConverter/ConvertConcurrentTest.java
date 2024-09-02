@@ -24,7 +24,8 @@ class ConvertConcurrentTest {
 
 	@BeforeAll
 	static void setUp() throws Exception {
-		in = Arrays.stream(TestResourcePath.getResource("samples").listFiles())
+		Utils.clearPDFFiles();
+		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
 				.filter(f -> !f.getName().equals("DOCX_TestPage.docx"))
 				.filter(f -> !f.getName().equals("Extlst-test.pptx"))
 				.toList();
@@ -36,8 +37,7 @@ class ConvertConcurrentTest {
 	static void close() throws OfficeException {
 		dc.close();
 		//System.out.println(); System.out.println(); System.out.println();
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles()).parallel()
-			.filter(f -> f.getName().endsWith(".pdf")).forEach(File::delete);
+		Utils.clearPDFFiles();
 	}
 	
 	@Test
