@@ -145,6 +145,16 @@ public class MainFrame extends JFrame {
 		
 		Instant startTime = Instant.now();
 		ConvertUtil cu = new ConvertUtil(Runtime.getRuntime().availableProcessors());
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				cu.close();
+			} catch (OfficeException e) {
+				// TODO Auto-generated catch block
+				System.out.println("\n");
+				System.err.println("Shutdown hook Exception :");
+				e.printStackTrace();
+			}
+		}));
 		try {
 			cu.start();
 			ins.stream().parallel().map(toIO).forEach(io -> {
