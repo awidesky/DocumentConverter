@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.imageio.ImageIO;
@@ -54,8 +55,13 @@ public class MainFrame extends JFrame {
 			return d;
 		}
 	};
+	private Map<String, String> property = Map.of();
 	
-	public MainFrame() {
+	public void property(Map<String, String> property) {
+		this.property  = property;
+	}
+	
+	public void init() {
 		setTitle("DocumentConverter " + Main.VERSION);
 		try {
 			BufferedImage ICON = ImageIO.read(MainFrame.class.getResourceAsStream("/icon/icon.png"));
@@ -118,6 +124,8 @@ public class MainFrame extends JFrame {
 		jfc.addChoosableFileFilter(new FileNameExtensionFilter("OpenDocument", 
 				"odt", "ott", "sxw", "ods", "ots", "sxc", "odp", "otp", "sxi"));
 		jfc.addChoosableFileFilter(new FileNameExtensionFilter("아래한글 문서", "hwp", "hwpx"));
+		jfc.setCurrentDirectory(new File(property.getOrDefault("openDir", "")));
+		
 		
 		List<File> ins = new ArrayList<>();
 		while(jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -144,7 +152,14 @@ public class MainFrame extends JFrame {
 		SwingUtilities.invokeLater(this::showProgress);
 		
 		Instant startTime = Instant.now();
-		ConvertUtil cu = new ConvertUtil(Runtime.getRuntime().availableProcessors());
+		int processNum = 4;
+		try {
+			String s = property.get("sofficeProcess");
+			if(s != null) processNum = Integer.parseInt(s);
+		} catch(NumberFormatException e) {
+			System.err.println(e.getMessage());
+		}
+		ConvertUtil cu = new ConvertUtil(processNum);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
 				cu.close();
