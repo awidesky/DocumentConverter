@@ -131,7 +131,7 @@ public class MainFrame extends JFrame {
 		jfc.setDialogTitle("Choose directory to save pdfs!");
 		jfc.resetChoosableFileFilters();
 		
-		if(jfc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
+		if(jfc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
 
 		cb_format.setEnabled(false);
 		ck_keep.setEnabled(false);
