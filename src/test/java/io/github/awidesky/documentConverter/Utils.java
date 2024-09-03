@@ -17,6 +17,9 @@ public class Utils {
 			CompareResultImpl diff = new PdfComparator<CompareResultImpl>(f1, f2).compare();
 			boolean ret = diff.isEqual();
 			if(!ret) {
+				System.out.println();
+				System.out.println("diff 1 : " + f1.getName());
+				System.out.println("diff 2 : " + f2.getName());
 				Desktop.getDesktop().open(f1);
 				Desktop.getDesktop().open(f2);
 				File d = new File(f1.getParent(), "diff_of-" + f1.getName() + "_" + f2.getName() +".pdf");
