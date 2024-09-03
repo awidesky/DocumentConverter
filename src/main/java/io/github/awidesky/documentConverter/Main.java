@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.swing.SwingUtilities;
 
+import io.github.awidesky.projectPath.UserDataPath;
+
 public class Main {
 	public static final String VERSION = "v1.1";
 	
@@ -24,8 +26,8 @@ public class Main {
 	}
 	
 	public static void readProperty() throws IOException {
-		File prop = new File("docconvProp.txt");
-		if(!prop.exists()) prop.createNewFile();
+		File prop = new File(UserDataPath.appLocalFolder("awidesky", "DocumentConverter"), "docconvProp.txt");
+		if(!prop.exists()) { prop.getParentFile().mkdirs(); prop.createNewFile(); }
 
 		mf.property(Files.lines(prop.toPath())
 				.map(s -> s.split(":"))
