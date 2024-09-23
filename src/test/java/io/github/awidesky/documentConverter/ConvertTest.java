@@ -22,8 +22,6 @@ class ConvertTest {
 	static void setup() throws OfficeException {
 		Utils.clearPDFFiles();
 		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
-				.filter(f -> !f.getName().equals("DOCX_TestPage.docx"))
-				.filter(f -> !f.getName().equals("Extlst-test.pptx"))
 				.toList();
 		ios = in.stream().map(IO::new).toList();
 		dc = new ConvertUtil(1);

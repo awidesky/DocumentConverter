@@ -21,15 +21,14 @@ class ConvertConcurrentTest {
 	
 	static ConvertUtil dc;
 	static List<File> in;
+	final static int processNum = Runtime.getRuntime().availableProcessors();
 
 	@BeforeAll
 	static void setUp() throws Exception {
 		Utils.clearPDFFiles();
 		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
-				.filter(f -> !f.getName().equals("DOCX_TestPage.docx"))
-				.filter(f -> !f.getName().equals("Extlst-test.pptx"))
 				.toList();
-		dc = new ConvertUtil(Runtime.getRuntime().availableProcessors());
+		dc = new ConvertUtil(processNum);
 		dc.start();
 	}
 	
@@ -55,15 +54,15 @@ class ConvertConcurrentTest {
 				fail("failed to convert while converting " + io.toString());
 			}
 		});
+		System.out.println("OpenOffice process : " + processNum);
 		System.out.println("Sequential convert : " + Duration.between(startTime, Instant.now()).toMillis() + "ms");
 		
 		List<File> first = ios.stream().map(IO::getOut).toList();
 		
-		ios.forEach(io -> io.setOut(new File(io.getOut().getParent(), "Parallel_" + io.getOut().getName())));
+		ios.forEach(io -> io.setOut(new File(io.getOut().getParent(), io.getOut().getName().replace("Sequential_", "Parallel_"))));
 		
 		startTime = Instant.now();
 		ios.parallelStream().forEach(io -> {
-			//System.out.println("\t" + io.toString());
 			try {
 				dc.convert(io);
 			} catch (OfficeException e) {
