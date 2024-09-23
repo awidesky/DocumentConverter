@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -34,8 +34,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.jodconverter.core.office.OfficeException;
-
+import io.github.awidesky.documentConverter.jodConverter.JodConvertManager;
 import io.github.awidesky.guiUtil.SwingDialogs;
 
 public class MainFrame extends JFrame {
@@ -46,6 +45,7 @@ public class MainFrame extends JFrame {
 	private final JLabel format = new JLabel("Format : ");
 	private final JComboBox<String> cb_format = new JComboBox<>(new String[] {".pdf", ".odt", ".docx", ".pptx", ".ods", ".xlsx", ".odp", ".txt", ".rtf"});
 	private final JCheckBox ck_keep = new JCheckBox("keep original extension in filename");
+	private final JCheckBox ck_simpleImple = new JCheckBox("use simple soffice command");
 	private final JFileChooser jfc = new JFileChooser() {
 		private static final long serialVersionUID = 1838574539723650634L;
 
@@ -86,8 +86,10 @@ public class MainFrame extends JFrame {
 		add(f, BorderLayout.CENTER);
 		
 		JPanel k = new JPanel();
+		k.setLayout(new BoxLayout(k, BoxLayout.Y_AXIS));
 		k.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 		k.add(ck_keep);
+		k.add(ck_simpleImple);
 		add(k, BorderLayout.SOUTH);
 		pack();
 		setLocation(dim.width / 2 - getSize().width - jfc.getPreferredSize().width / 2, dim.height / 2 - getSize().height / 2);
@@ -102,8 +104,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	
-
-	private Function<File, IO> toIO = null;
+	private ConvertManager converter;
 	private boolean failedFlag = false;
 
 	private int targets = 0;
@@ -145,57 +146,26 @@ public class MainFrame extends JFrame {
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setDialogTitle("Choose directory to save pdfs!");
 		jfc.resetChoosableFileFilters();
-		jfc.setSelectedFile(ins.get(0).getParentFile());//TODO : add simple pdf mode that just do soffice --headless --convert-to pdf -outdir /FILES2/ "files"
+		jfc.setSelectedFile(ins.get(0).getParentFile());
 		
 		if(jfc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
 
 		cb_format.setEnabled(false);
 		ck_keep.setEnabled(false);
+		if(ck_simpleImple.isSelected()) {
+			converter = new SimpleConvertManager();
+		} else {
+			converter = new JodConvertManager();
+		}
 		targets = ins.size();
 		
 		File saveDir = jfc.getSelectedFile();
-		toIO = IOFactory.toExtension(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
-		
+		converter.setup(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
 		
 		SwingUtilities.invokeLater(this::showProgress);
 		
 		Instant startTime = Instant.now();
-		int processNum = 4;
-		try {
-			String s = property.get("sofficeProcess");
-			if(s != null) processNum = Integer.parseInt(s);
-		} catch(NumberFormatException e) {
-			System.err.println(e.getMessage());
-		}
-		ConvertUtil cu = new ConvertUtil(Math.min(processNum, ins.size()));
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			try {
-				cu.close();
-			} catch (OfficeException e) {
-				// TODO Auto-generated catch block
-				System.out.println("\n");
-				System.err.println("Shutdown hook Exception :");
-				e.printStackTrace();
-			}
-		}));
-		try {
-			cu.start();
-			ins.stream().parallel().map(toIO).forEach(io -> {
-				SwingUtilities.invokeLater(() -> updateUI(io.getIn(), io.getOut()));
-				try {
-					cu.convert(io);
-				} catch (OfficeException e) {
-					setFailedFlag();
-					e.printStackTrace();
-					SwingDialogs.error("Failed to convert " + io.getIn().getName(), "%e%", e, false);
-				}
-			});
-			cu.close();
-		} catch (OfficeException e) {
-			setFailedFlag();
-			e.printStackTrace();
-			SwingDialogs.error("Failed to run converter", "%e%", e, false);
-		}
+		failedFlag = converter.convert(ins, property, this::updateUI);
 		long milli = Duration.between(startTime, Instant.now()).toMillis();
 		
 		if (!failedFlag) {
@@ -204,9 +174,6 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-//	public static String getTargetExtention() {
-//		return extention;
-//	}
 
 	private void showProgress() {
 
@@ -231,13 +198,12 @@ public class MainFrame extends JFrame {
 		loadingFrame.setVisible(true);
 		
 	}
-	private void updateUI(File in, File out) {
-		loadingStatus.setText(String.format("%0" + String.valueOf(targets).length() + "d/%" + String.valueOf(targets).length() + "d    ", ++cnt, targets)
-				+ in.getName() + " -> " + out.getName());
-		progress.setValue((int) (100.0 * cnt / targets));
+	private synchronized void updateUI(File in, File out) {
+		SwingUtilities.invokeLater(() -> {
+			loadingStatus.setText(String.format("%0" + String.valueOf(targets).length() + "d/%" + String.valueOf(targets).length() + "d    ", ++cnt, targets)
+					+ in.getName() + " -> " + out.getName());
+			progress.setValue((int) (100.0 * cnt / targets));
+		});
 	}
 
-	private synchronized void setFailedFlag() {
-		failedFlag = true;
-	}
 }
