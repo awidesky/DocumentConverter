@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -91,7 +93,12 @@ public class MainFrame extends JFrame {
 		setLocation(dim.width / 2 - getSize().width - jfc.getPreferredSize().width / 2, dim.height / 2 - getSize().height / 2);
 		setVisible(true);
 		start();
+		if(loadingFrame != null) {
+			loadingFrame.setVisible(false);
+			loadingFrame.dispose();
+		}
 		dispose();
+		Stream.of(Window.getWindows()).forEach(Window::dispose);
 	}
 	
 	
@@ -138,6 +145,7 @@ public class MainFrame extends JFrame {
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setDialogTitle("Choose directory to save pdfs!");
 		jfc.resetChoosableFileFilters();
+		jfc.setSelectedFile(ins.get(0).getParentFile());//TODO : add simple pdf mode that just do soffice --headless --convert-to pdf -outdir /FILES2/ "files"
 		
 		if(jfc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
 
@@ -194,11 +202,6 @@ public class MainFrame extends JFrame {
 			SwingDialogs.information("done!", "Task done in " + String.format("%d min %d.%03d sec",  milli / (60 * 1000), (milli / 1000) % 60, milli % 1000)
 			+ "\nChanged files are in following folder :\n" + saveDir.getAbsolutePath(), true);
 		}
-		
-		SwingUtilities.invokeLater(() -> {
-			loadingFrame.setVisible(false);
-			loadingFrame.dispose();
-		});
 	}
 	
 //	public static String getTargetExtention() {
