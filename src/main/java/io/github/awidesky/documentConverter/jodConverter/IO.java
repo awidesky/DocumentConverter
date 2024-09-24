@@ -25,7 +25,7 @@ public class IO {
 		this.out = out;
 	}
 	
-	private static String changeExtension(File file, String newExtension) {
+	public static String changeExtension(File file, String newExtension) {
 		if (!newExtension.startsWith(".")) newExtension = "." + newExtension;
 		try {
 			return file.getName().substring(0, file.getName().lastIndexOf(".")) + newExtension;	

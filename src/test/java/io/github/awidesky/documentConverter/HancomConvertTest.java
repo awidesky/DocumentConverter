@@ -23,21 +23,23 @@ class HancomConvertTest {
 
 	@BeforeAll
 	static void setup() {
-		Utils.clearPDFFiles();
-		in = Arrays.stream(TestResourcePath.getResource("samples/hancom").listFiles()).toList();
-		ios = in.stream().map(IO::new).toList();
+		Utils.clearOutput();
+		in = Arrays.stream(TestResourcePath.getResource("samples/hancom").listFiles())
+				.filter(f -> f.getName().endsWith(".hwp") || f.getName().endsWith(".hwpx"))
+				.toList();
+		ios = in.stream().map(Utils::toIO).toList();
 	}
 	
 	@AfterAll
 	static void close() {
 		//System.out.println(); System.out.println(); System.out.println();
-		Utils.clearPDFFiles();
+		Utils.clearOutput();
 	}
 	
 	@ParameterizedTest
 	@MethodSource("io.github.awidesky.documentConverter.ConvertUtilProvider#convertUtils")
 	void convertTest(ConvertUtil dc) throws Exception {
-		dc.setup(1);
+		dc.setup(1); //TODO : processnum??
 		dc.start();
 		dc.convert(ios);
 		dc.close();
@@ -49,8 +51,8 @@ class HancomConvertTest {
 		dc.setup(1);
 		dc.start();
 		for (IO io : ios) {
-			IO io1 = new IO(io.getIn(), "_1_.pdf");
-			IO io2 = new IO(io.getIn(), "_2_.pdf");
+			IO io1 = new IO(io.getIn(), Utils.outDir(), IO.changeExtension(io.getIn(), "_1_.pdf"));
+			IO io2 = new IO(io.getIn(), Utils.outDir(), IO.changeExtension(io.getIn(), "_2_.pdf"));
 
 			// System.out.println("\t" + io1.toString());
 			dc.convert(io1);

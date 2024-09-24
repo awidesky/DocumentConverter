@@ -5,11 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 import de.redsix.pdfcompare.CompareResultImpl;
 import de.redsix.pdfcompare.PdfComparator;
 import de.redsix.pdfcompare.RenderingException;
+import io.github.awidesky.documentConverter.jodConverter.IO;
 
 public class Utils {
 	public static boolean comparePDF(File f1, File f2) {
@@ -40,11 +40,20 @@ public class Utils {
 		}
 	}
 
-	public static void clearPDFFiles() {
-		Arrays.stream(TestResourcePath.getResource("samples").listFiles())
+	private static final File outdir = TestResourcePath.getResource("output");
+	public static File outDir() {
+		return outdir;
+	}
+	
+	public static void clearOutput() {
+		if(!outdir.exists()) outdir.mkdirs();
+		
+		Arrays.stream(outdir.listFiles())
 			.parallel()
-			.flatMap(f -> f.isDirectory() ? Arrays.stream(f.listFiles()) : Stream.of(f))
-			.filter(f -> f.getName().endsWith(".pdf"))
 			.forEach(File::delete);
+	}
+	
+	public static IO toIO(File f) {
+		return new IO(f, outdir, IO.changeExtension(f, ".pdf"));
 	}
 }

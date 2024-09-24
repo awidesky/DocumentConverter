@@ -63,14 +63,8 @@ public class SimpleConvertUtil implements ConvertUtil {
 		boolean ret = false;
 		getParams(io);
 		try {
-			ret = threadpool.submit(getJob(0, io.getIn().getParentFile(), getCommand(List.of(io.getIn())))).get() == 0;
-			if(ret) {
-				String newFile = io.getIn().getAbsolutePath();
-				newFile = newFile.substring(0, newFile.lastIndexOf(".")) + "." + format;
-				File f = new File(newFile);
-				//if(f.exists()) 
-					f.renameTo(io.getOut());
-			}
+			ret = threadpool.submit(getJob(0, io.getOut().getParentFile(), getCommand(List.of(io.getIn())))).get() == 0;
+			if(ret) renameOutFile(io);
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 			SwingDialogs.error("Convert task failed!", "%e%", e, true);
@@ -96,10 +90,12 @@ public class SimpleConvertUtil implements ConvertUtil {
 
 		boolean success = IntStream.range(0, process)
 				.filter(i -> !lists.get(i).isEmpty())
-				.mapToObj(i -> threadpool.submit(getJob(i, ios.get(0).getIn().getParentFile(), getCommand(lists.get(i)))))
+				.mapToObj(i -> threadpool.submit(getJob(i, ios.get(0).getOut().getParentFile(), getCommand(lists.get(i)))))
 				.map(NonThrowFuture::new)
 				.map(NonThrowFuture::get)
 				.allMatch(i -> i == 0);
+		
+		ios.forEach(this::renameOutFile);
 		
 		return success;
 	}
@@ -181,5 +177,15 @@ public class SimpleConvertUtil implements ConvertUtil {
 			
 			return err;
 		};
+	}
+
+	private void renameOutFile(IO io) {
+		String newFile = io.getIn().getName();
+		newFile = newFile.substring(0, newFile.lastIndexOf(".")) + "." + format;
+		File f = new File(outdir, newFile);
+		System.out.println("newFile(" + f.exists() + ") : " + f.getAbsolutePath());//TODO
+		if(f.exists()) 
+			f.renameTo(io.getOut());
+		System.out.println("renamedFile(" + io.getOut().exists() + ") : " + io.getOut().getAbsolutePath());//TODO		
 	}
 }

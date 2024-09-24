@@ -21,16 +21,16 @@ class ConvertTest {
 
 	@BeforeAll
 	static void setup() {
-		Utils.clearPDFFiles();
+		Utils.clearOutput();
 		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
 				.toList();
-		ios = in.stream().map(IO::new).toList();
+		ios = in.stream().map(Utils::toIO).toList();
 	}
 	
 	@AfterAll
 	static void close() {
 		//System.out.println(); System.out.println(); System.out.println();
-		Utils.clearPDFFiles();
+		Utils.clearOutput();
 	}
 
 	@ParameterizedTest
@@ -48,8 +48,8 @@ class ConvertTest {
 		dc.setup(1);
 		dc.start();
 		for (IO io : ios) {
-			IO io1 = new IO(io.getIn(), "_1_.pdf");
-			IO io2 = new IO(io.getIn(), "_2_.pdf");
+			IO io1 = new IO(io.getIn(), Utils.outDir(), IO.changeExtension(io.getIn(), "_1_.pdf"));
+			IO io2 = new IO(io.getIn(), Utils.outDir(), IO.changeExtension(io.getIn(), "_2_.pdf"));
 
 			// System.out.println("\t" + io1.toString());
 			dc.convert(io1);
