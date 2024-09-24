@@ -149,7 +149,9 @@ public class SimpleConvertUtil implements ConvertUtil {
 		ret.addAll(List.of(sofficePath + "soffice", "--headless", "--convert-to", "\"" + format + "\"",
 				"--outdir", "\"" + outdir.getAbsolutePath() + "\""));
 		files.stream().map(File::getAbsolutePath).map(s -> "\"" + s + "\"").forEach(ret::add);
-		
+		if(System.getProperty("os.name").toLowerCase().contains("mac")) {
+			ret = List.of("zsh", "-c", ret.stream().collect(Collectors.joining(" ")));
+		}
 		return ret;
 	}
 	
