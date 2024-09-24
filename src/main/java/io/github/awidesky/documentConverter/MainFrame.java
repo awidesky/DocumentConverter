@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
@@ -57,11 +56,6 @@ public class MainFrame extends JFrame {
 			return d;
 		}
 	};
-	private Map<String, String> property = Map.of();
-	
-	public void property(Map<String, String> property) {
-		this.property  = property;
-	}
 	
 	public void init() {
 		setTitle("DocumentConverter " + Main.VERSION);
@@ -101,6 +95,7 @@ public class MainFrame extends JFrame {
 		}
 		dispose();
 		Stream.of(Window.getWindows()).forEach(Window::dispose);
+		System.exit(0);
 	}
 	
 	
@@ -132,7 +127,7 @@ public class MainFrame extends JFrame {
 		jfc.addChoosableFileFilter(new FileNameExtensionFilter("OpenDocument", 
 				"odt", "ott", "sxw", "ods", "ots", "sxc", "odp", "otp", "sxi"));
 		jfc.addChoosableFileFilter(new FileNameExtensionFilter("아래한글 문서", "hwp", "hwpx"));
-		jfc.setCurrentDirectory(new File(property.getOrDefault("openDir", "")));
+		jfc.setCurrentDirectory(new File(Main.getProperty("openDir", "")));
 		
 		
 		List<File> ins = new ArrayList<>();
@@ -146,7 +141,6 @@ public class MainFrame extends JFrame {
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setDialogTitle("Choose directory to save pdfs!");
 		jfc.resetChoosableFileFilters();
-		jfc.setSelectedFile(ins.get(0).getParentFile());
 		
 		if(jfc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) { return; }
 
@@ -160,12 +154,13 @@ public class MainFrame extends JFrame {
 		targets = ins.size();
 		
 		File saveDir = jfc.getSelectedFile();
+		if(saveDir.isFile()) saveDir = saveDir.getParentFile();
 		converter.setup(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
 		
 		SwingUtilities.invokeLater(this::showProgress);
 		
 		Instant startTime = Instant.now();
-		failedFlag = converter.convert(ins, property, this::updateUI);
+		failedFlag = !converter.convert(ins, Main.getProperty(), this::updateUI);
 		long milli = Duration.between(startTime, Instant.now()).toMillis();
 		
 		if (!failedFlag) {

@@ -26,6 +26,7 @@ public class IO {
 	}
 	
 	private static String changeExtension(File file, String newExtension) {
+		if (!newExtension.startsWith(".")) newExtension = "." + newExtension;
 		try {
 			return file.getName().substring(0, file.getName().lastIndexOf(".")) + newExtension;	
 		} catch(StringIndexOutOfBoundsException e) {

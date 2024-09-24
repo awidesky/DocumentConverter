@@ -29,7 +29,7 @@ public class JodConvertManager implements ConvertManager {
 		} catch(NumberFormatException e) {
 			System.err.println(e.getMessage());
 		}
-		ConvertUtil cu = new ConvertUtil(Math.min(processNum, inputs.size()));
+		JodConvertUtil cu = new JodConvertUtil();
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
 				cu.close();
@@ -40,6 +40,7 @@ public class JodConvertManager implements ConvertManager {
 			}
 		}));
 		try {
+			cu.setup(Math.min(processNum, inputs.size()));
 			cu.start();
 			inputs.stream().parallel().map(toIO).forEach(io -> {
 				updateUI.accept(io.getIn(), io.getOut());
@@ -51,6 +52,7 @@ public class JodConvertManager implements ConvertManager {
 					SwingDialogs.error("Failed to convert " + io.getIn().getName(), "%e%", e, false);
 				}
 			});
+			
 			cu.close();
 		} catch (OfficeException e) {
 			ret.set(false);
