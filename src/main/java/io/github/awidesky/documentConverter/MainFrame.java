@@ -11,6 +11,7 @@ import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -60,9 +61,12 @@ public class MainFrame extends JFrame {
 	public void init() {
 		setTitle("DocumentConverter " + Main.VERSION);
 		try {
-			BufferedImage ICON = ImageIO.read(MainFrame.class.getResourceAsStream("/icon/icon.png"));
-			setIconImage(ICON);
-			Taskbar.getTaskbar().setIconImage(ICON);
+			InputStream is = MainFrame.class.getResourceAsStream("/icon/icon.png");
+			if(is != null) {
+				BufferedImage ICON = ImageIO.read(is);
+				setIconImage(ICON);
+				if(Taskbar.isTaskbarSupported()) Taskbar.getTaskbar().setIconImage(ICON);
+			}
 		} catch (IOException e) {
 			SwingDialogs.error("Unable to find icon.png", "%e%", e, false);
 			e.printStackTrace();
