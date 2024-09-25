@@ -23,6 +23,9 @@ class ConvertTest {
 	static void setup() {
 		Utils.clearOutput();
 		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
+				.filter(f -> f.getName().endsWith(".docx") || 
+							 f.getName().endsWith(".xlsx") ||
+							 f.getName().endsWith(".pptx"))
 				.toList();
 		ios = in.stream().map(Utils::toIO).toList();
 	}

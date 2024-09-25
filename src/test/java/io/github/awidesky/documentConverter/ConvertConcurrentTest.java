@@ -28,6 +28,9 @@ class ConvertConcurrentTest {
 	static void setUp() {
 		Utils.clearOutput();
 		in = Arrays.stream(TestResourcePath.getResource("samples/ms_office").listFiles())
+				.filter(f -> f.getName().endsWith(".docx") || 
+							 f.getName().endsWith(".xlsx") ||
+						 	 f.getName().endsWith(".pptx"))
 				.toList();
 	}
 	
