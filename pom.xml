@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>io.github.awidesky</groupId>
 			<artifactId>ProjectPath</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/de.redsix/pdfcompare -->
