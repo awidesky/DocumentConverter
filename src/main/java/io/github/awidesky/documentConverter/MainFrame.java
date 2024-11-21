@@ -93,13 +93,6 @@ public class MainFrame extends JFrame {
 		setLocation(dim.width / 2 - getSize().width - jfc.getPreferredSize().width / 2, dim.height / 2 - getSize().height / 2);
 		setVisible(true);
 		start();
-		if(loadingFrame != null) {
-			loadingFrame.setVisible(false);
-			loadingFrame.dispose();
-		}
-		dispose();
-		Stream.of(Window.getWindows()).forEach(Window::dispose);
-		System.exit(0);
 	}
 	
 	
@@ -113,6 +106,11 @@ public class MainFrame extends JFrame {
 	private JFrame loadingFrame;
 	
 	public void start() {
+		if(!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(this::start);
+			return;
+		}
+		
 		jfc.setMultiSelectionEnabled(true);
 		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		jfc.setDialogTitle("Choose document files");
@@ -158,51 +156,69 @@ public class MainFrame extends JFrame {
 		targets = ins.size();
 		
 		File saveDir = jfc.getSelectedFile();
-		if(saveDir.isFile()) saveDir = saveDir.getParentFile();
+
+		showProgress();
+		
 		converter.setup(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
 		
-		SwingUtilities.invokeLater(this::showProgress);
-		
-		Instant startTime = Instant.now();
-		failedFlag = !converter.convert(ins, Main.getProperty(), this::updateUI);
-		long milli = Duration.between(startTime, Instant.now()).toMillis();
-		
-		if (!failedFlag) {
-			SwingDialogs.information("done!", "Task done in " + String.format("%d min %d.%03d sec",  milli / (60 * 1000), (milli / 1000) % 60, milli % 1000)
-			+ "\nChanged files are in following folder :\n" + saveDir.getAbsolutePath(), true);
-		}
+		Thread work = new Thread(() -> {
+			Instant startTime = Instant.now();
+			failedFlag = !converter.convert(ins, Main.getProperty(), this::updateUI);
+			long milli = Duration.between(startTime, Instant.now()).toMillis();
+
+			if (!failedFlag) {
+				SwingDialogs.information("done!", "Task done in " + String.format("%d min %d.%03d sec",  milli / (60 * 1000), (milli / 1000) % 60, milli % 1000)
+				+ "\nChanged files are in following folder :\n" + saveDir.getAbsolutePath(), true);
+			}
+
+			if(loadingFrame != null) {
+				loadingFrame.setVisible(false);
+				loadingFrame.dispose();
+			}
+			dispose();
+			Stream.of(Window.getWindows()).forEach(Window::dispose);
+			System.exit(0);
+		});
+		work.setDaemon(true);
+		work.start();
 	}
 	
 
 	private void showProgress() {
-
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		loadingFrame = new JFrame();
 		loadingFrame.setTitle("Progress...");
 		loadingFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		loadingFrame.setSize(420, 100);
 		loadingFrame.setLocation(dim.width/2-loadingFrame.getSize().width/2, dim.height/2-loadingFrame.getSize().height/2);
-		loadingFrame.setLayout(null);
-		loadingFrame.setResizable(false);
+		//loadingFrame.setLayout(null);
+		loadingFrame.setResizable(true);
 		
-		loadingStatus = new JLabel(String.format("%0" + String.valueOf(targets).length() + "d/%" + String.valueOf(targets).length() + "d", 0, targets));
-		loadingStatus.setBounds(14, 8, 370, 18);
+		loadingStatus = new JLabel(String.format("Initializing... - %0" + String.valueOf(targets).length() + "d/%" + String.valueOf(targets).length() + "d", 0, targets));
 		
 		progress = new JProgressBar();
 		progress.setStringPainted(true);
-		progress.setBounds(15, 27, 370, 18);
+		progress.setValue(0);
 		
-		loadingFrame.add(loadingStatus);
-		loadingFrame.add(progress);
+		JPanel p = new JPanel();
+		p.setLayout(null);
+		p.add(loadingStatus);
+		p.add(progress);
+		loadingFrame.add(p);
+
+		progress.setBounds(15, 40, 390, 18);
+		loadingStatus.setBounds(14, 8, 370, 18);
+		
 		loadingFrame.setVisible(true);
-		
 	}
 	private synchronized void updateUI(File in, File out) {
-		SwingUtilities.invokeLater(() -> {
-			loadingStatus.setText(String.format("%0" + String.valueOf(targets).length() + "d/%" + String.valueOf(targets).length() + "d    ", ++cnt, targets)
-					+ in.getName() + " -> " + out.getName());
-			progress.setValue((int) (100.0 * cnt / targets));
-		});
+		if(!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(() -> updateUI(in, out));
+			return;
+		}
+		loadingStatus.setText(String.format("%0" + String.valueOf(targets).length() + "d/%" + String.valueOf(targets).length() + "d    ", ++cnt, targets)
+				+ in.getName() + " -> " + out.getName());
+		progress.setValue((int) (100.0 * cnt / targets));
 	}
 
 }
