@@ -19,7 +19,7 @@ import io.github.awidesky.guiUtil.SwingDialogs;
 
 public class SimpleConvertUtil implements ConvertUtil {
 
-	private static String sofficePath = Main.getProperty("sofficePath", ".");
+	private static String sofficePath = Main.getProperty("sofficePath", "");
 	/*
 	static {
 		Process p;
@@ -155,7 +155,8 @@ public class SimpleConvertUtil implements ConvertUtil {
 		return () -> {
 			ProcessBuilder pb = new ProcessBuilder(command);
 			pb.directory(workingdir);
-			System.out.println("[Debug] soffice command : " + pb.command().stream().collect(Collectors.joining(" ")));
+			System.out.println("[Debug] soffice cmd : " + pb.command().stream().collect(Collectors.joining(" ")));
+			System.out.println("[Debug] working dir : " + pb.directory().getAbsolutePath());
 			Process p = pb.start();
 			try(BufferedReader br = p.inputReader()) {
 				br.lines().forEach(s -> {
