@@ -156,11 +156,13 @@ public class MainFrame extends JFrame {
 		targets = ins.size();
 		
 		File saveDir = jfc.getSelectedFile();
+		while(!saveDir.isDirectory()) saveDir = saveDir.getParentFile();
 
 		showProgress();
 		
 		converter.setup(saveDir, ck_keep.isSelected(), cb_format.getSelectedItem().toString());
 		
+		String savePath = saveDir.getAbsolutePath();
 		Thread work = new Thread(() -> {
 			Instant startTime = Instant.now();
 			failedFlag = !converter.convert(ins, Main.getProperty(), this::updateUI);
@@ -168,7 +170,7 @@ public class MainFrame extends JFrame {
 
 			if (!failedFlag) {
 				SwingDialogs.information("done!", "Task done in " + String.format("%d min %d.%03d sec",  milli / (60 * 1000), (milli / 1000) % 60, milli % 1000)
-				+ "\nChanged files are in following folder :\n" + saveDir.getAbsolutePath(), true);
+				+ "\nChanged files are in following folder :\n" + savePath, true);
 			}
 
 			if(loadingFrame != null) {
