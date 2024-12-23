@@ -36,15 +36,12 @@ public class Main {
 			prop.createNewFile();
 		}
 
-		property = (Files.lines(prop.toPath()).map(s -> s.split(":"))
+		property = (Files.lines(prop.toPath()).map(s -> s.split("="))
 				.collect(Collectors.toMap(s -> s[0].strip(), s -> s[1].strip())));
 	}
 	
 	public static Map<String, String> getProperty() {
 		return property;
-	}
-	public static String getProperty(String key) {
-		return property.get(key);
 	}
 	public static String getProperty(String key, String defaultValue) {
 		return property.getOrDefault(key, defaultValue);
