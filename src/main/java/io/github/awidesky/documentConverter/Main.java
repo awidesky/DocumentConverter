@@ -3,6 +3,7 @@ package io.github.awidesky.documentConverter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import javax.swing.SwingUtilities;
 import io.github.awidesky.projectPath.UserDataPath;
 
 public class Main {
-	public static final String VERSION = "v1.1";
+	public static final String VERSION = "v1.2";
 	
 	private static final MainFrame mf = new MainFrame();
 	private static Map<String, String> property;
@@ -36,8 +37,14 @@ public class Main {
 			prop.createNewFile();
 		}
 
-		property = (Files.lines(prop.toPath()).map(s -> s.split("="))
-				.collect(Collectors.toMap(s -> s[0].strip(), s -> s[1].strip())));
+		property = (Files.lines(prop.toPath())
+				.filter(s -> !s.startsWith("#"))
+				.map(s -> s.split("="))
+				.peek(arr -> {
+					if(arr.length == 2) System.out.println("Invalide argument : " + Arrays.stream(arr).collect(Collectors.joining("=")));
+				})
+				.filter(arr -> arr.length == 2)
+				.collect(Collectors.toMap(arr -> arr[0].strip(), arr -> arr[1].strip())));
 	}
 	
 	public static Map<String, String> getProperty() {

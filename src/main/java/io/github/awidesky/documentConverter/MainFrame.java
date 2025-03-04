@@ -138,7 +138,7 @@ public class MainFrame extends JFrame {
 		}
 		if(ins.isEmpty()) return;
 		
-		jfc.setCurrentDirectory(ins.get(0).getParentFile());
+		jfc.setCurrentDirectory(new File(Main.getProperty("saveDir", ins.get(0).getParent())));
 		jfc.setMultiSelectionEnabled(false);
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setDialogTitle("Choose directory to save pdfs!");
