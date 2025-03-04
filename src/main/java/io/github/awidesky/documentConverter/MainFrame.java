@@ -45,7 +45,7 @@ public class MainFrame extends JFrame {
 	private final JLabel format = new JLabel("Format : ");
 	private final JComboBox<String> cb_format = new JComboBox<>(new String[] {".pdf", ".odt", ".docx", ".pptx", ".ods", ".xlsx", ".odp", ".txt", ".rtf"});
 	private final JCheckBox ck_keep = new JCheckBox("keep original extension in filename");
-	private final JCheckBox ck_simpleImple = new JCheckBox("use simple soffice command");
+	private final JCheckBox ck_simpleImple = new JCheckBox("use simple soffice command", true);
 	private final JFileChooser jfc = new JFileChooser() {
 		private static final long serialVersionUID = 1838574539723650634L;
 
