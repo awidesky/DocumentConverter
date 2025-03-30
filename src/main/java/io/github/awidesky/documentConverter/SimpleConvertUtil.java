@@ -184,9 +184,9 @@ public class SimpleConvertUtil implements ConvertUtil {
 		String newFile = io.getIn().getName();
 		newFile = newFile.substring(0, newFile.lastIndexOf(".")) + "." + format;
 		File f = new File(outdir, newFile);
-		System.out.println("newFile(" + f.exists() + ") : " + f.getAbsolutePath());//TODO
+		System.out.println("newFile(" + f.exists() + ") \t: " + f.getAbsolutePath());//TODO
 		if(f.exists()) 
 			f.renameTo(io.getOut());
-		System.out.println("renamedFile(" + io.getOut().exists() + ") : " + io.getOut().getAbsolutePath());//TODO		
+		System.out.println("renFile(" + io.getOut().exists() + ") \t: " + io.getOut().getAbsolutePath());//TODO		
 	}
 }

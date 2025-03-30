@@ -20,10 +20,12 @@ import io.github.awidesky.documentConverter.jodConverter.IO;
 public class SimpleConvertManager implements ConvertManager {
 
 	private String format;
+	private File outdir;
 	private SimpleConvertUtil converter = new SimpleConvertUtil();
 	
 	@Override
 	public void setup(File outdir, boolean keepOriginalExtension, String format) {
+		this.outdir = outdir;
 		converter.setOutdir(outdir);
 		this.format = format;
 		if(keepOriginalExtension) {
@@ -53,7 +55,7 @@ public class SimpleConvertManager implements ConvertManager {
 		});
 		converter.start();
 		
-		return converter.convert(inputs.stream().map(f -> new IO(f, format)).toList());
+		return converter.convert(inputs.stream().map(f -> new IO(f, outdir, IO.changeExtension(f, format))).toList());
 	}
 
 }
