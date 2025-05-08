@@ -41,7 +41,7 @@ public class Main {
 				.filter(s -> !s.startsWith("#"))
 				.map(s -> s.split("="))
 				.peek(arr -> {
-					if(arr.length == 2) System.out.println("Invalide argument : " + Arrays.stream(arr).collect(Collectors.joining("=")));
+					if(arr.length != 2) System.out.println("Invalid argument : " + Arrays.stream(arr).collect(Collectors.joining("=")));
 				})
 				.filter(arr -> arr.length == 2)
 				.collect(Collectors.toMap(arr -> arr[0].strip(), arr -> arr[1].strip())));
