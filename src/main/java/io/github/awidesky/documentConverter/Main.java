@@ -27,6 +27,16 @@ public class Main {
 	
 	public static void main(String[] args) {
 		System.out.println("DocumentConverter " + VERSION);
+		if(args.length > 0) {
+			if(args[0].equals("--help")) {
+				System.out.println("Usage : java -jar DocumentConverter.jar [openDir] [saveDir]");
+				return;
+			}
+			property.put("openDir", args[0]);
+		}
+		if(args.length > 1) {
+			property.put("saveDir", args[1]);
+		}
 		SwingUtilities.invokeLater(mf::init);
 	}
 	
@@ -44,7 +54,7 @@ public class Main {
 					if(arr.length != 2) System.out.println("Invalid argument : " + Arrays.stream(arr).collect(Collectors.joining("=")));
 				})
 				.filter(arr -> arr.length == 2)
-				.collect(Collectors.toMap(arr -> arr[0].strip(), arr -> arr[1].strip())));
+				.collect(Collectors.toConcurrentMap(arr -> arr[0].strip(), arr -> arr[1].strip())));
 	}
 	
 	public static Map<String, String> getProperty() {
